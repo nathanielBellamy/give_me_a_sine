@@ -1,0 +1,10 @@
+[package]
+name = "give_me_a_sine"
+version = "0.1.0"
+edition = "2021"
+
+
+[workspace]
+
+[dependencies]
+the_library = { path = "the_library" }
