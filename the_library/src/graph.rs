@@ -5,8 +5,40 @@ use super::format;
 use super::math;
 
 pub struct GraphSettings {
+    //TODO: store methods to compute domain_width, range_height
+    pub x_min: f64,
+    pub x_max: f64,
+    pub y_min: f64,
+    pub y_max: f64,
     pub width: u8,
     pub height: u8,
+    pub ep: f64,
+    pub fill_above: bool,
+    pub fill_below: bool,
+    pub graph_char: char,
+    pub shade_graph: ShadeGraph,
+    pub above_char: char,
+    pub below_char: char,
+}
+
+pub struct IntegralApproximation {
+    //TODO: store method to compute Integral here
+    //https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
+    pub pos_count: u64,
+    pub neg_count: u64,
+    pub unit_area: u64,
+}
+
+pub enum ShadeGraph {
+    AboveBelow(ShadeAboveBelow),
+    Integral,
+    NoShade,
+}
+
+pub enum ShadeAboveBelow {
+    Above,
+    Below,
+    AboveAndBelow,
 }
 
 pub fn draw_output(sine_function: &math::SineFunction, graph_settings: &GraphSettings) {
@@ -21,7 +53,7 @@ fn horizontal_boundary(graph_width: u8) {
     let mut output: String = format!("{}", '|');
     let mut i: u8 = 0;
     while i < graph_width {
-        output = format!("{}{}", output, "-");
+        output = format!("{}{}", output, '~');
         i += 1;
     }
     output = format!("{}{}", output, '|');
@@ -60,18 +92,62 @@ fn get_char(
     graph_settings: &GraphSettings,
 ) -> char {
     let output: char;
-    let ep: f64 = 0.17;
     let x: f64 = math::x_from_col_index(col_index, graph_settings.width);
-    let on_graph: bool = on_graph(sine_function, x, y, ep);
+    let f_x: f64 = math::compute_sine_function_at_x(sine_function, x);
+    let on_graph: bool = on_graph(f_x, y, graph_settings.ep);
     if on_graph == true {
-        output = '*';
+        output = graph_settings.graph_char;
     } else {
-        output = ' ';
+        output = get_non_graph_char(x, y, f_x, graph_settings);
     }
     return output;
 }
 
-fn on_graph(sine_function: &math::SineFunction, x: f64, y: f64, ep: f64) -> bool {
-    let f_x: f64 = math::compute_sine_function_at_x(sine_function, x);
+fn get_non_graph_char(_x: f64, y: f64, f_x: f64, graph_settings: &GraphSettings) -> char {
+    let default: char = ' ';
+    match &graph_settings.shade_graph {
+        ShadeGraph::AboveBelow(shade_above_below) => match shade_above_below {
+            ShadeAboveBelow::Above => {
+                if y > f_x {
+                    graph_settings.above_char
+                } else {
+                    default
+                }
+            }
+            ShadeAboveBelow::Below => {
+                if y < f_x {
+                    graph_settings.below_char
+                } else {
+                    default
+                }
+            }
+            ShadeAboveBelow::AboveAndBelow => {
+                if y > f_x {
+                    graph_settings.above_char
+                } else {
+                    graph_settings.below_char
+                }
+            }
+        },
+        ShadeGraph::Integral => {
+            if y > 0.0 {
+                if y < f_x {
+                    '+'
+                } else {
+                    default
+                }
+            } else {
+                if y > f_x {
+                    '-'
+                } else {
+                    default
+                }
+            }
+        }
+        ShadeGraph::NoShade => default,
+    }
+}
+
+fn on_graph(f_x: f64, y: f64, ep: f64) -> bool {
     return (f_x - y).abs() < ep;
 }

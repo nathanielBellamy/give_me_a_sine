@@ -20,11 +20,11 @@ pub fn symbolic_result(sine_function: &math::SineFunction) {
     format::empty_line(1);
     format::divider(1);
     println!("  Your sine is:");
+    format::empty_line(1);
     println!(
-        "  y = {} sin({} * x + {})",
+        "      y = {} sin({} * x + {})",
         sine_function.a, sine_function.b, sine_function.c
     );
-    format::divider(1);
     format::empty_line(1);
 }
 
