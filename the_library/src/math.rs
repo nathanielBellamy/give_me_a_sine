@@ -9,6 +9,12 @@ pub struct SineFunction {
     pub c: f64,
 }
 
+impl SineFunction {
+    pub fn new(a: f64, b: f64, c: f64) -> SineFunction {
+        SineFunction { a, b, c }
+    }
+}
+
 pub fn compute_sine_function_at_x(sine_function: &SineFunction, x: f64) -> f64 {
     return sine_function.a * (sine_function.b * x + sine_function.c).sin();
 }

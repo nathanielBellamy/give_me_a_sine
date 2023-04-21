@@ -60,15 +60,18 @@ fn horizontal_boundary(graph_width: u8) {
     println!("{}", output);
 }
 
-fn graph_body(sine_function: &math::SineFunction, graph_settings: &GraphSettings) {
+pub fn graph_body(sine_function: &math::SineFunction, graph_settings: &GraphSettings) -> String {
+    let mut output: String = "".to_string();
     let mut row_index: u8 = 0;
     while row_index < graph_settings.height {
-        graph_row(sine_function, row_index, graph_settings);
+        output.push_str(&graph_row(sine_function, row_index, graph_settings));
         row_index += 1;
     }
+
+    output
 }
 
-fn graph_row(sine_function: &math::SineFunction, row_index: u8, graph_settings: &GraphSettings) {
+fn graph_row(sine_function: &math::SineFunction, row_index: u8, graph_settings: &GraphSettings) -> String {
     let mut output: String = String::from('|');
     let mut col_index: u8 = 0;
     let y: f64 = math::y_from_row_index(row_index, graph_settings.height);
@@ -80,8 +83,9 @@ fn graph_row(sine_function: &math::SineFunction, row_index: u8, graph_settings: 
         );
         col_index += 1;
     }
-    output = format!("{}{}", output, '|');
-    println!("{}", output);
+    output = format!("{}{}{}{}", "<div class='gmas_graph_row'>", output, "|", "</div>");
+    // println!("{}", output);
+    output
 }
 
 fn get_char(
@@ -104,7 +108,7 @@ fn get_char(
 }
 
 fn get_non_graph_char(_x: f64, y: f64, f_x: f64, graph_settings: &GraphSettings) -> char {
-    let default: char = ' ';
+    let default: char = 'ø';
     match &graph_settings.shade_graph {
         ShadeGraph::AboveBelow(shade_above_below) => match shade_above_below {
             ShadeAboveBelow::Above => {

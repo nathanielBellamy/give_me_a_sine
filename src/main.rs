@@ -2,6 +2,11 @@ use the_library::graph;
 use the_library::math;
 use the_library::text_output;
 use the_library::user_input;
+use crate::wasm::Wasm;
+
+use wasm_bindgen::prelude::*;
+
+mod wasm;
 
 fn main() {
     let mut sine_function = math::SineFunction {
@@ -35,4 +40,15 @@ fn main() {
     text_output::graph_rectangle();
     graph::draw_output(&sine_function, &graph_settings);
     text_output::outro();
+}
+
+#[wasm_bindgen]
+pub struct GmasWasm;
+
+#[wasm_bindgen]
+impl GmasWasm {
+    #[wasm_bindgen(constructor)]
+    pub fn new() {
+        Wasm::run();
+    }
 }
