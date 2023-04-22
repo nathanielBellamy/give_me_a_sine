@@ -1,5 +1,6 @@
 use the_library::graph;
 use the_library::math::SineFunction;
+use the_library::color_square::COLOR_SQUARE;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -19,10 +20,10 @@ impl Wasm {
             ep: 0.15,
             fill_above: false,
             fill_below: false,
-            graph_char: '*',
-            shade_graph: graph::ShadeGraph::NoShade,
-            above_char: 'a',
-            below_char: 'b',
+            graph_char: *COLOR_SQUARE.black,
+            shade_graph: graph::ShadeGraph::AboveBelow(graph::ShadeAboveBelow::AboveAndBelow),
+            above_char: *COLOR_SQUARE.green,
+            below_char: *COLOR_SQUARE.blue,
         };
 
         let output_element = Wasm::output_element();

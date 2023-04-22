@@ -3,6 +3,7 @@
 */
 use super::format;
 use super::math;
+use super::color_square::COLOR_SQUARE;
 
 pub struct GraphSettings {
     //TODO: store methods to compute domain_width, range_height
@@ -50,13 +51,12 @@ pub fn draw_output(sine_function: &math::SineFunction, graph_settings: &GraphSet
 }
 
 fn horizontal_boundary(graph_width: u8) {
-    let mut output: String = format!("{}", '|');
+    let mut output: String = String::new();
     let mut i: u8 = 0;
     while i < graph_width {
         output = format!("{}{}", output, '~');
         i += 1;
     }
-    output = format!("{}{}", output, '|');
     println!("{}", output);
 }
 
@@ -72,7 +72,7 @@ pub fn graph_body(sine_function: &math::SineFunction, graph_settings: &GraphSett
 }
 
 fn graph_row(sine_function: &math::SineFunction, row_index: u8, graph_settings: &GraphSettings) -> String {
-    let mut output: String = String::from('|');
+    let mut output: String = String::new();
     let mut col_index: u8 = 0;
     let y: f64 = math::y_from_row_index(row_index, graph_settings.height);
     while col_index < graph_settings.width {
@@ -83,7 +83,7 @@ fn graph_row(sine_function: &math::SineFunction, row_index: u8, graph_settings: 
         );
         col_index += 1;
     }
-    output = format!("{}{}{}{}", "<div class='gmas_graph_row'>", output, "|", "</div>");
+    output = format!("{}{}{}", "<div class='gmas_graph_row'>", output, "</div>");
     // println!("{}", output);
     output
 }
@@ -108,7 +108,7 @@ fn get_char(
 }
 
 fn get_non_graph_char(_x: f64, y: f64, f_x: f64, graph_settings: &GraphSettings) -> char {
-    let default: char = 'ø';
+    let default: char = *COLOR_SQUARE.white;
     match &graph_settings.shade_graph {
         ShadeGraph::AboveBelow(shade_above_below) => match shade_above_below {
             ShadeAboveBelow::Above => {
