@@ -3,6 +3,7 @@ use the_library::math::SineFunction;
 use the_library::color_square::COLOR_SQUARE;
 use wasm_bindgen::prelude::*;
 use std::rc::Rc;
+use std::cell::RefCell;
 
 #[wasm_bindgen]
 extern "C" {
@@ -40,12 +41,12 @@ impl Wasm {
         let form = Wasm::form();
         let form = Rc::new(form);
 
-        let buffer = Buffer::new(); // graph will be drawn based on these values
-        let buffer = Rc::new(buffer);
+        let buffer = Buffer::new();
+        let buffer = Rc::new(RefCell::new(buffer));
 
         // initial render
         output_element.set_inner_html(
-            &graph_body(&buffer.function, &buffer.settings)
+            &graph_body(&buffer.borrow().function, &buffer.borrow().settings)
         );
 
         // form submit copies write buffer onto read buffer and triggers render
@@ -57,11 +58,14 @@ impl Wasm {
             let form = form.clone();
             let buffer = buffer.clone();
             let closure_submit = Closure::<dyn FnMut(_)>::new(move |event: web_sys::KeyboardEvent| {
-                // if event.key_code() == 13 {
+                if event.key_code() == 13 {
+                    unsafe {
+                        console_log!("ENTER")
+                    }
                     output_element.set_inner_html(
-                        &graph_body(&buffer.function, &buffer.settings)
+                        &graph_body(&buffer.borrow().function, &buffer.borrow().settings)
                     );
-                // }
+                }
             });
 
             form.add_event_listener_with_callback("keydown", closure_submit.as_ref().unchecked_ref());
@@ -70,34 +74,34 @@ impl Wasm {
         {
             // init form edit listener
             // input elements mutate buffer
-            let mut buffer = buffer.clone();
             let form = form.clone();
             let closure_handle_input = Closure::<dyn FnMut(_)>::new(move |event: web_sys::Event| {
                 unsafe {
-                   console_log!("HEREHER")
+                   console_log!("CHANGE")
                 }
-                // let mut buffer = *Rc::get_mut(&mut buffer).unwrap();
-                // TODO: pull vaules from form
-                // buffer.settings = GraphSettings {
-                //     x_min: -std::f64::consts::PI,
-                //     x_max: std::f64::consts::PI,
-                //     y_min: -1.0,
-                //     y_max: 1.0,
-                //     width: 50,
-                //     height: 20,
-                //     ep: 0.15,
-                //     fill_above: true,
-                //     fill_below: true,
-                //     graph_char: *COLOR_SQUARE.red,
-                //     shade_graph: ShadeGraph::AboveBelow(ShadeAboveBelow::AboveAndBelow),
-                //     above_char: *COLOR_SQUARE.purple,
-                //     below_char: *COLOR_SQUARE.orange,
-                // };
-                // buffer.function = SineFunction {
-                //     a: 1.0,
-                //     b: 2.0,
-                //     c: 3.0,
-                // };
+                let buffer = &mut *buffer.borrow_mut();
+                // let buf fer: GraphSettings = Rc::try_unwrap(buffer.clone());
+                // TODO: pull values from form
+                buffer.settings = GraphSettings {
+                    x_min: -std::f64::consts::PI,
+                    x_max: std::f64::consts::PI,
+                    y_min: -1.0,
+                    y_max: 1.0,
+                    width: 50,
+                    height: 20,
+                    ep: 0.15,
+                    fill_above: true,
+                    fill_below: true,
+                    graph_char: *COLOR_SQUARE.red,
+                    shade_graph: ShadeGraph::AboveBelow(ShadeAboveBelow::AboveAndBelow),
+                    above_char: *COLOR_SQUARE.purple,
+                    below_char: *COLOR_SQUARE.orange,
+                };
+                buffer.function = SineFunction {
+                    a: 1.0,
+                    b: 2.0,
+                    c: 3.0,
+                };
             });
 
             form.add_event_listener_with_callback("change", closure_handle_input.as_ref().unchecked_ref()).unwrap();
