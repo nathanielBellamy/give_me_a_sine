@@ -2,6 +2,7 @@
     math.rs
 */
 
+#[derive(Clone, Copy)]
 pub struct SineFunction {
     //a sin(b*x + c)
     pub a: f64,

@@ -41,14 +41,3 @@ fn main() {
     graph::draw_output(&sine_function, &graph_settings);
     text_output::outro();
 }
-
-#[wasm_bindgen]
-pub struct GmasWasm;
-
-#[wasm_bindgen]
-impl GmasWasm {
-    #[wasm_bindgen(constructor)]
-    pub fn new() {
-        Wasm::run();
-    }
-}

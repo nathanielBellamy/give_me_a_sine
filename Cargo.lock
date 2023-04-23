@@ -134,6 +134,13 @@ dependencies = [
 [[package]]
 name = "the_library"
 version = "0.1.0"
+dependencies = [
+ "console_error_panic_hook",
+ "gloo-utils",
+ "js-sys",
+ "wasm-bindgen",
+ "web-sys",
+]
 
 [[package]]
 name = "unicode-ident"

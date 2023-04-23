@@ -5,6 +5,7 @@ use super::format;
 use super::math;
 use super::color_square::COLOR_SQUARE;
 
+#[derive(Clone, Copy)]
 pub struct GraphSettings {
     //TODO: store methods to compute domain_width, range_height
     pub x_min: f64,
@@ -22,6 +23,26 @@ pub struct GraphSettings {
     pub below_char: char,
 }
 
+impl GraphSettings {
+    pub fn new() -> GraphSettings {
+        GraphSettings {
+            x_min: -std::f64::consts::PI,
+            x_max: std::f64::consts::PI,
+            y_min: -1.0,
+            y_max: 1.0,
+            width: 50,
+            height: 20,
+            ep: 0.15,
+            fill_above: false,
+            fill_below: false,
+            graph_char: *COLOR_SQUARE.black,
+            shade_graph: ShadeGraph::AboveBelow(ShadeAboveBelow::AboveAndBelow),
+            above_char: *COLOR_SQUARE.green,
+            below_char: *COLOR_SQUARE.blue,
+        }
+    }
+}
+
 pub struct IntegralApproximation {
     //TODO: store method to compute Integral here
     //https://stackoverflow.com/questions/27831944/how-do-i-store-a-closure-in-a-struct-in-rust
@@ -30,12 +51,14 @@ pub struct IntegralApproximation {
     pub unit_area: u64,
 }
 
+#[derive(Clone, Copy)]
 pub enum ShadeGraph {
     AboveBelow(ShadeAboveBelow),
     Integral,
     NoShade,
 }
 
+#[derive(Clone, Copy)]
 pub enum ShadeAboveBelow {
     Above,
     Below,
