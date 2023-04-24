@@ -43,6 +43,8 @@ impl Wasm {
 
         let buffer = Buffer::new();
         let buffer = Rc::new(RefCell::new(buffer));
+        
+        let mut counter: usize = 0;
 
         // initial render
         output_element.set_inner_html(
@@ -51,33 +53,50 @@ impl Wasm {
 
         // form submit copies write buffer onto read buffer and triggers render
 
-        {   
-            // init form submit listener
-            // render from buffer
+        // TODO: this is a pattern we could use for a form
+        // at the moment, however, we want the render to update onchange
+        // {   
+        //     // init form submit listener
+        //     // render from buffer
 
-            let form = form.clone();
-            let buffer = buffer.clone();
-            let closure_submit = Closure::<dyn FnMut(_)>::new(move |event: web_sys::KeyboardEvent| {
-                if event.key_code() == 13 {
-                    unsafe {
-                        console_log!("ENTER")
-                    }
-                    output_element.set_inner_html(
-                        &graph_body(&buffer.borrow().function, &buffer.borrow().settings)
-                    );
-                }
-            });
+        //     let form = form.clone();
+        //     let buffer = buffer.clone();
+        //     let closure_submit = Closure::<dyn FnMut(_)>::new(move |event: web_sys::KeyboardEvent| {
+        //         if event.key_code() == 13 {
+        //             unsafe {
+        //                 console_log!("ENTER")
+        //             }
+        //             output_element.set_inner_html(
+        //                 &graph_body(&buffer.borrow().function, &buffer.borrow().settings)
+        //             );
+        //         }
+        //     });
 
-            form.add_event_listener_with_callback("keydown", closure_submit.as_ref().unchecked_ref());
-            closure_submit.forget();
-        }
+        //     form.add_event_listener_with_callback("keydown", closure_submit.as_ref().unchecked_ref());
+        //     closure_submit.forget();
+        // }
         {
             // init form edit listener
             // input elements mutate buffer
             let form = form.clone();
             let closure_handle_input = Closure::<dyn FnMut(_)>::new(move |event: web_sys::Event| {
                 unsafe {
-                   console_log!("CHANGE")
+                   console_log!("CHANGE");
+                }
+                let input = event
+                        .target()
+                        .unwrap()
+                        .dyn_into::<web_sys::HtmlInputElement>()
+                        .unwrap();
+                let id = input.id(); 
+
+                // - listen to form
+                // - on change
+                //      - retrieve id of input triggering change
+                //      - pass event to appropriate handler in match
+                
+                unsafe {
+                    console_log!("{}", val);
                 }
                 let buffer = &mut *buffer.borrow_mut();
                 // let buf fer: GraphSettings = Rc::try_unwrap(buffer.clone());
@@ -98,10 +117,16 @@ impl Wasm {
                     below_char: *COLOR_SQUARE.orange,
                 };
                 buffer.function = SineFunction {
-                    a: 1.0,
+                    a: val.parse::<f64>().unwrap(),
                     b: 2.0,
                     c: 3.0,
                 };
+
+                output_element.set_inner_html(
+                    &graph_body(&buffer.function, &buffer.settings)
+                );
+
+                counter += 1; 
             });
 
             form.add_event_listener_with_callback("change", closure_handle_input.as_ref().unchecked_ref()).unwrap();

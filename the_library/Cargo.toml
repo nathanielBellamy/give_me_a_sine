@@ -18,6 +18,7 @@ features = [
   'Document',
   'Element',
   'HtmlCanvasElement',
+  'HtmlInputElement',
   'KeyboardEvent',
   'MouseEvent',
   'WebGlBuffer',
