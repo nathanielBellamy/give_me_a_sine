@@ -1,6 +1,6 @@
 use the_library::graph::{GraphSettings, ShadeGraph, ShadeAboveBelow, graph_body};
 use the_library::math::SineFunction;
-use the_library::color_square::COLOR_SQUARE;
+use the_library::color_square::{ColorSquare, COLOR_SQUARE};
 use wasm_bindgen::prelude::*;
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -139,8 +139,19 @@ impl Buffer {
             "gmas_form_input_width" => {
                 self.settings.width = val.parse::<u8>().unwrap()
             },
+            "gmas_form_input_graph_char" => {
+                let index = val.parse::<u8>().unwrap(); // slider value
+                self.settings.graph_char = ColorSquare::by_index(index)
+            },
+            "gmas_form_input_above_char" => {
+                let index = val.parse::<u8>().unwrap(); // slider value
+                self.settings.above_char = ColorSquare::by_index(index)
+            },
+            "gmas_form_input_below_char" => {
+                let index = val.parse::<u8>().unwrap(); // slider value
+                self.settings.below_char = ColorSquare::by_index(index)
+            },
             _ => {}
         }
     }
-
 }
