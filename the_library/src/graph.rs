@@ -37,7 +37,7 @@ impl GraphSettings {
             fill_below: false,
             graph_char: *COLOR_SQUARE.black,
             shade_graph: ShadeGraph::AboveBelow(ShadeAboveBelow::AboveAndBelow),
-            above_char: *COLOR_SQUARE.green,
+            above_char: *COLOR_SQUARE.orange,
             below_char: *COLOR_SQUARE.blue,
         }
     }
