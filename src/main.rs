@@ -1,12 +1,13 @@
+use crate::wasm::Wasm;
 use the_library::graph;
 use the_library::math;
 use the_library::text_output;
 use the_library::user_input;
-use crate::wasm::Wasm;
 
 use wasm_bindgen::prelude::*;
 
 mod wasm;
+mod ui_manifest;
 
 fn main() {
     let mut sine_function = math::SineFunction {

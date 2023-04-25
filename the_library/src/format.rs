@@ -1,5 +1,5 @@
 /*
-	format.rs
+    format.rs
 */
 
 pub fn divider(count: u8) {

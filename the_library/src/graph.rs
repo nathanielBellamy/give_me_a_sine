@@ -1,9 +1,9 @@
 /*
     graph.rs
 */
+use super::color_square::COLOR_SQUARE;
 use super::format;
 use super::math;
-use super::color_square::COLOR_SQUARE;
 
 #[derive(Clone, Copy)]
 pub struct GraphSettings {
@@ -94,7 +94,11 @@ pub fn graph_body(sine_function: &math::SineFunction, graph_settings: &GraphSett
     output
 }
 
-fn graph_row(sine_function: &math::SineFunction, row_index: u8, graph_settings: &GraphSettings) -> String {
+fn graph_row(
+    sine_function: &math::SineFunction,
+    row_index: u8,
+    graph_settings: &GraphSettings,
+) -> String {
     let mut output: String = String::new();
     let mut col_index: u8 = 0;
     let y: f64 = math::y_from_row_index(row_index, graph_settings.height);

@@ -1,9 +1,15 @@
-use the_library::graph::{GraphSettings, ShadeGraph, ShadeAboveBelow, graph_body};
-use the_library::math::SineFunction;
-use the_library::color_square::{ColorSquare, COLOR_SQUARE};
-use wasm_bindgen::prelude::*;
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
+use the_library::color_square::ColorSquare;
+use the_library::graph::{graph_body, GraphSettings};
+use the_library::math::SineFunction;
+use crate::ui_manifest::{
+    INPUT_IDS,
+    INPUT_A, INPUT_B, INPUT_C, INPUT_EP, 
+    INPUT_HEIGHT, INPUT_WIDTH, 
+    INPUT_GRAPH_CHAR, INPUT_ABOVE_CHAR, INPUT_BELOW_CHAR
+};
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
@@ -43,40 +49,46 @@ impl Wasm {
 
         let buffer = Buffer::new();
         let buffer = Rc::new(RefCell::new(buffer));
-        
+
         // initial render
-        output_element.set_inner_html(
-            &graph_body(&buffer.borrow().function, &buffer.borrow().settings)
-        );
+        output_element.set_inner_html(&graph_body(
+            &buffer.borrow().function,
+            &buffer.borrow().settings,
+        ));
+
+        &buffer.borrow().set_ui_initial_values();
+        
 
         {
             // init form edit listener
             // input elements mutate buffer
             let form = form.clone();
-            let closure_handle_input = Closure::<dyn FnMut(_)>::new(move |event: web_sys::Event| {
-                let input = event
+            let closure_handle_input =
+                Closure::<dyn FnMut(_)>::new(move |event: web_sys::Event| {
+                    let input = event
                         .target()
                         .unwrap()
                         .dyn_into::<web_sys::HtmlInputElement>()
                         .unwrap();
-                let id = input.id(); 
+                    let id = input.id();
 
-                let val = input.value();
-                let buffer = &mut *buffer.borrow_mut();
+                    let val = input.value();
+                    let buffer = &mut *buffer.borrow_mut();
 
-                buffer.update(id, val);
+                    buffer.update(id, val);
 
-                output_element.set_inner_html(
-                    &graph_body(&buffer.function, &buffer.settings)
-                );
-            });
+                    output_element.set_inner_html(&graph_body(&buffer.function, &buffer.settings));
+                });
 
-            form.add_event_listener_with_callback("input", closure_handle_input.as_ref().unchecked_ref()).unwrap();
+            form.add_event_listener_with_callback(
+                "input",
+                closure_handle_input.as_ref().unchecked_ref(),
+            )
+            .unwrap();
             closure_handle_input.forget()
         }
     }
 }
-
 
 impl Wasm {
     fn window() -> web_sys::Window {
@@ -89,7 +101,7 @@ impl Wasm {
             .expect("should have a document on window")
     }
 
-    fn output_element() -> web_sys::Element { 
+    fn output_element() -> web_sys::Element {
         Wasm::document()
             .get_element_by_id("give_me_a_sine_output")
             .expect("unable to find canvas element")
@@ -118,40 +130,49 @@ impl Buffer {
 
     pub fn update(&mut self, input_id: String, val: String) {
         match input_id.as_str() {
-            "gmas_form_input_a" => {
-                self.function.a = val.parse::<f64>().unwrap()
-            },
-           "gmas_form_input_b" => {
-                self.function.b = val.parse::<f64>().unwrap()
-            },
-           "gmas_form_input_c" => {
-                self.function.c = val.parse::<f64>().unwrap()
-            },
-            "gmas_form_input_ep" => {
-                self.settings.ep = val.parse::<f64>().unwrap()
-            },
-           "gmas_form_input_x_min" => {
-                self.settings.x_min = val.parse::<f64>().unwrap()
-            },
-            "gmas_form_input_height" => {
-                self.settings.height = val.parse::<u8>().unwrap()
-            },
-            "gmas_form_input_width" => {
-                self.settings.width = val.parse::<u8>().unwrap()
-            },
-            "gmas_form_input_graph_char" => {
+            INPUT_A => self.function.a = val.parse::<f64>().unwrap(),
+            INPUT_B => self.function.b = val.parse::<f64>().unwrap(),
+            INPUT_C => self.function.c = val.parse::<f64>().unwrap(),
+            INPUT_EP => self.settings.ep = val.parse::<f64>().unwrap(),
+            INPUT_HEIGHT => self.settings.height = val.parse::<u8>().unwrap(),
+            INPUT_WIDTH => self.settings.width = val.parse::<u8>().unwrap(),
+            INPUT_GRAPH_CHAR => {
                 let index = val.parse::<u8>().unwrap(); // slider value
                 self.settings.graph_char = ColorSquare::by_index(index)
-            },
-            "gmas_form_input_above_char" => {
+            }
+            INPUT_ABOVE_CHAR => {
                 let index = val.parse::<u8>().unwrap(); // slider value
                 self.settings.above_char = ColorSquare::by_index(index)
-            },
-            "gmas_form_input_below_char" => {
+            }
+            INPUT_BELOW_CHAR => {
                 let index = val.parse::<u8>().unwrap(); // slider value
                 self.settings.below_char = ColorSquare::by_index(index)
-            },
+            }
             _ => {}
         }
+    }
+
+    pub fn set_ui_initial_values(&self) {
+        for id in INPUT_IDS.iter() {
+            self.set_ui_initial_value(id.to_string());
+        }
+    }
+
+    pub fn set_ui_initial_value(&self, input_id: String) {
+        let element: web_sys::Element = Wasm::document().get_element_by_id(&input_id)
+            .expect("to get element {input_id}");
+        let val: String = match input_id.as_str() {
+            INPUT_A => self.function.a.to_string(),
+            INPUT_B => self.function.b.to_string(),
+            INPUT_C => self.function.c.to_string(),
+            INPUT_EP => self.settings.ep.to_string(),
+            INPUT_HEIGHT => self.settings.height.to_string(),
+            INPUT_WIDTH => self.settings.width.to_string(),
+            INPUT_GRAPH_CHAR => ColorSquare::to_index_char(self.settings.graph_char).to_string(),
+            INPUT_ABOVE_CHAR => ColorSquare::to_index_char(self.settings.above_char).to_string(),
+            INPUT_BELOW_CHAR => ColorSquare::to_index_char(self.settings.below_char).to_string(),
+            _ => "-1".to_string()
+        };
+        element.set_attribute("value", &val).expect("to set attribute value on {input_id}"); 
     }
 }
