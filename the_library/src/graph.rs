@@ -30,15 +30,15 @@ impl GraphSettings {
             x_max: std::f64::consts::PI,
             y_min: -1.0,
             y_max: 1.0,
-            width: 50,
-            height: 20,
-            ep: 0.15,
+            width: 40,
+            height: 30,
+            ep: 0.25,
             fill_above: false,
             fill_below: false,
-            graph_char: *COLOR_SQUARE.black,
+            graph_char: *COLOR_SQUARE.blue,
             shade_graph: ShadeGraph::AboveBelow(ShadeAboveBelow::AboveAndBelow),
-            above_char: *COLOR_SQUARE.orange,
-            below_char: *COLOR_SQUARE.blue,
+            above_char: *COLOR_SQUARE.white,
+            below_char: *COLOR_SQUARE.green,
         }
     }
 }
