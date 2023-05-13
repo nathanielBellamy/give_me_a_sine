@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 the_library = { path = "the_library" }
-wasm-bindgen = "0.2.84"
+wasm-bindgen = "0.2.85"
 gloo-utils = { version = "0.1", features = ["serde"] }
 js-sys = "0.3.61"
 console_error_panic_hook = "0.1.7"
