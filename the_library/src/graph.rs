@@ -1,6 +1,3 @@
-/*
-    graph.rs
-*/
 use super::color_square::COLOR_SQUARE;
 use super::format;
 use super::math;
@@ -30,8 +27,8 @@ impl GraphSettings {
             x_max: std::f64::consts::PI,
             y_min: -1.0,
             y_max: 1.0,
-            width: 40,
-            height: 30,
+            width: 32,
+            height: 20,
             ep: 0.25,
             fill_above: false,
             fill_below: false,
