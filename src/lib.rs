@@ -9,8 +9,7 @@ pub struct GmasWasm;
 
 #[wasm_bindgen]
 impl GmasWasm {
-    #[wasm_bindgen(constructor)]
-    pub fn new() {
+    pub fn run() {
         Wasm::run();
     }
 }
