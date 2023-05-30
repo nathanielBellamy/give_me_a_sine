@@ -1,7 +1,3 @@
-/*
-    format.rs
-*/
-
 pub fn divider(count: u8) {
     let mut i: u8 = 0;
     while i < count {

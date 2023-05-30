@@ -9,7 +9,7 @@ pub struct GmasWasm;
 
 #[wasm_bindgen]
 impl GmasWasm {
-    pub fn run() {
-        Wasm::run();
+    pub fn run() -> JsValue {
+        Wasm::run()
     }
 }

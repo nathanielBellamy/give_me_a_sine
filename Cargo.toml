@@ -3,12 +3,13 @@ name = "give_me_a_sine"
 version = "0.1.0"
 edition = "2021"
 
-
 [workspace]
 
 [dependencies]
 the_library = { path = "the_library" }
 wasm-bindgen = "0.2.86"
+serde = { version = "1.0.163", features = ["derive"] }
+serde-wasm-bindgen = "0.5.0"
 gloo-utils = { version = "0.1", features = ["serde"] }
 js-sys = "0.3.61"
 console_error_panic_hook = "0.1.7"
@@ -20,6 +21,7 @@ features = [
   'Document',
   'Element',
   'HtmlCanvasElement',
+  'HtmlInputElement',
   'MouseEvent',
   'WebGlBuffer',
   'WebGlVertexArrayObject',

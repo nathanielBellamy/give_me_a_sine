@@ -2,46 +2,19 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use the_library::color_square::ColorSquare;
 use the_library::graph::{graph_body, GraphSettings};
-use the_library::math::SineFunction;
 use crate::ui_manifest::{
-    INPUT_IDS,
     INPUT_A, INPUT_B, INPUT_C, INPUT_EP, 
     INPUT_HEIGHT, INPUT_WIDTH, 
     INPUT_GRAPH_CHAR, INPUT_ABOVE_CHAR, INPUT_BELOW_CHAR
 };
 use wasm_bindgen::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-
-    // The `console.log` is quite polymorphic, so we can bind it with multiple
-    // signatures. Note that we need to use `js_name` to ensure we always call
-    // `log` in JS.
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_u32(a: u32);
-
-    // Multiple arguments too!
-    #[wasm_bindgen(js_namespace = console, js_name = log)]
-    fn log_many(a: &str, b: &str);
-}
-
-macro_rules! console_log {
-    // Note that this is using the `log` function imported above during
-    // `bare_bones`
-    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
-}
-
-#[wasm_bindgen]
 pub struct Wasm;
 
-#[wasm_bindgen]
 impl Wasm {
     // Entry point for JS
-    pub fn run() {
+    pub fn run() -> JsValue {
         let output_element = Wasm::output_element();
 
         let form = Wasm::form();
@@ -56,13 +29,11 @@ impl Wasm {
             &buffer.borrow().settings,
         ));
 
-        &buffer.borrow().set_ui_initial_values();
-        
-
         {
             // init form edit listener
             // input elements mutate buffer
             let form = form.clone();
+            let buffer = buffer.clone();
             let closure_handle_input =
                 Closure::<dyn FnMut(_)>::new(move |event: web_sys::Event| {
                     let input = event
@@ -85,8 +56,11 @@ impl Wasm {
                 closure_handle_input.as_ref().unchecked_ref(),
             )
             .unwrap();
-            closure_handle_input.forget()
+            closure_handle_input.forget();
         }
+
+        let to_js = buffer.clone().borrow().clone();
+        serde_wasm_bindgen::to_value(&to_js).unwrap()
     }
 }
 
@@ -114,26 +88,26 @@ impl Wasm {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Buffer {
     settings: GraphSettings,
-    function: SineFunction,
+    function: [f32; 3],
 }
 
 impl Buffer {
     pub fn new() -> Buffer {
         Buffer {
             settings: GraphSettings::new(),
-            function: SineFunction::new(1.0, 2.0, 3.0),
+            function: [1.0, 2.0, 3.0],
         }
     }
 
     pub fn update(&mut self, input_id: String, val: String) {
         match input_id.as_str() {
-            INPUT_A => self.function.a = val.parse::<f64>().unwrap(),
-            INPUT_B => self.function.b = val.parse::<f64>().unwrap(),
-            INPUT_C => self.function.c = val.parse::<f64>().unwrap(),
-            INPUT_EP => self.settings.ep = val.parse::<f64>().unwrap(),
+            INPUT_A => self.function[0] = val.parse::<f32>().unwrap(),
+            INPUT_B => self.function[1] = val.parse::<f32>().unwrap(),
+            INPUT_C => self.function[2] = val.parse::<f32>().unwrap(),
+            INPUT_EP => self.settings.ep = val.parse::<f32>().unwrap(),
             INPUT_HEIGHT => self.settings.height = val.parse::<u8>().unwrap(),
             INPUT_WIDTH => self.settings.width = val.parse::<u8>().unwrap(),
             INPUT_GRAPH_CHAR => {
@@ -150,29 +124,5 @@ impl Buffer {
             }
             _ => {}
         }
-    }
-
-    pub fn set_ui_initial_values(&self) {
-        for id in INPUT_IDS.iter() {
-            self.set_ui_initial_value(id.to_string());
-        }
-    }
-
-    pub fn set_ui_initial_value(&self, input_id: String) {
-        let element: web_sys::Element = Wasm::document().get_element_by_id(&input_id)
-            .expect("to get element {input_id}");
-        let val: String = match input_id.as_str() {
-            INPUT_A => self.function.a.to_string(),
-            INPUT_B => self.function.b.to_string(),
-            INPUT_C => self.function.c.to_string(),
-            INPUT_EP => self.settings.ep.to_string(),
-            INPUT_HEIGHT => self.settings.height.to_string(),
-            INPUT_WIDTH => self.settings.width.to_string(),
-            INPUT_GRAPH_CHAR => ColorSquare::to_index_char(self.settings.graph_char).to_string(),
-            INPUT_ABOVE_CHAR => ColorSquare::to_index_char(self.settings.above_char).to_string(),
-            INPUT_BELOW_CHAR => ColorSquare::to_index_char(self.settings.below_char).to_string(),
-            _ => "-1".to_string()
-        };
-        element.set_attribute("value", &val).expect("to set attribute value on {input_id}"); 
     }
 }

@@ -1,35 +1,17 @@
-/*
-    math.rs
-*/
-
-#[derive(Clone, Copy)]
-pub struct SineFunction {
-    //a sin(b*x + c)
-    pub a: f64,
-    pub b: f64,
-    pub c: f64,
+pub fn compute_sine_function_at_x(sine_function: &[f32; 3], x: f32) -> f32 {
+    return sine_function[0] * (sine_function[1] * x + sine_function[2]).sin();
 }
 
-impl SineFunction {
-    pub fn new(a: f64, b: f64, c: f64) -> SineFunction {
-        SineFunction { a, b, c }
-    }
-}
-
-pub fn compute_sine_function_at_x(sine_function: &SineFunction, x: f64) -> f64 {
-    return sine_function.a * (sine_function.b * x + sine_function.c).sin();
-}
-
-pub fn x_from_col_index(col_index: u8, graph_width: u8) -> f64 {
+pub fn x_from_col_index(col_index: u8, graph_width: u8) -> f32 {
     //col_index = 0 -> -pi
     //col_index = graph_width -> pi
-    let t: f64 = (col_index as f64) / (graph_width as f64);
-    return std::f64::consts::PI * (2.0 * t - 1.0);
+    let t: f32 = (col_index as f32) / (graph_width as f32);
+    return std::f32::consts::PI * (2.0 * t - 1.0);
 }
 
-pub fn y_from_row_index(row_index: u8, graph_height: u8) -> f64 {
+pub fn y_from_row_index(row_index: u8, graph_height: u8) -> f32 {
     //row_index = 0 -> 1
     //row_index = graph_height -> -1
-    let t: f64 = (row_index as f64) / (graph_height as f64);
+    let t: f32 = (row_index as f32) / (graph_height as f32);
     return 1.0 - 2.0 * t;
 }
