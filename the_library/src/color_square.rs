@@ -33,8 +33,8 @@ pub const COLOR_SQUARE: ColorSquare<'static> = ColorSquare {
 };
 
 impl ColorSquare<'static> {
-    pub fn by_index(index: u8) -> char {
-        match index {
+    pub fn by_id(id: u8) -> char {
+        match id {
             0 => *COLOR_SQUARE.black,
             1 => *COLOR_SQUARE.white,
             2 => *COLOR_SQUARE.purple,
@@ -48,7 +48,7 @@ impl ColorSquare<'static> {
         }
     }
 
-    pub fn to_index_char(c: char) -> char {
+    pub fn to_id(c: char) -> char {
         match c {
          '⬛' => '0',
          '⬜' => '1',

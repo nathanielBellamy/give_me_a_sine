@@ -1,4 +1,4 @@
-use super::color_square::COLOR_SQUARE;
+use super::color_square::ColorSquare;
 use super::format;
 use super::math;
 use serde::{Deserialize, Serialize};
@@ -15,9 +15,9 @@ pub struct GraphSettings {
     pub ep: f32,
     pub fill_above: bool,
     pub fill_below: bool,
-    pub graph_char: char,
-    pub above_char: char,
-    pub below_char: char,
+    pub graph_char_id: u8,
+    pub above_char_id: u8,
+    pub below_char_id: u8,
 }
 
 impl GraphSettings {
@@ -32,9 +32,9 @@ impl GraphSettings {
             ep: 0.25,
             fill_above: false,
             fill_below: false,
-            graph_char: *COLOR_SQUARE.blue,
-            above_char: *COLOR_SQUARE.white,
-            below_char: *COLOR_SQUARE.green,
+            graph_char_id: 3,
+            above_char_id: 1,
+            below_char_id: 4,
         }
     }
 }
@@ -109,7 +109,7 @@ fn get_char(
     let f_x: f32 = math::compute_sine_function_at_x(sine_function, x);
     let on_graph: bool = on_graph(f_x, y, graph_settings.ep);
     if on_graph == true {
-        output = graph_settings.graph_char;
+        output = ColorSquare::by_id(graph_settings.graph_char_id);
     } else {
         output = get_non_graph_char(x, y, f_x, graph_settings);
     }
@@ -117,11 +117,12 @@ fn get_char(
 }
 
 fn get_non_graph_char(_x: f32, y: f32, f_x: f32, graph_settings: &GraphSettings) -> char {
-    if y > f_x {
-        graph_settings.above_char
+    let color_id = if y > f_x {
+        graph_settings.above_char_id
     } else {
-        graph_settings.below_char
-    }
+        graph_settings.below_char_id
+    };
+    ColorSquare::by_id(color_id)
 }
 
 fn on_graph(f_x: f32, y: f32, ep: f32) -> bool {

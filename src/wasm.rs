@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::rc::Rc;
-use the_library::color_square::ColorSquare;
 use the_library::graph::{graph_body, GraphSettings};
 use crate::ui_manifest::{
     INPUT_A, INPUT_B, INPUT_C, INPUT_EP, 
@@ -110,18 +109,9 @@ impl Buffer {
             INPUT_EP => self.settings.ep = val.parse::<f32>().unwrap(),
             INPUT_HEIGHT => self.settings.height = val.parse::<u8>().unwrap(),
             INPUT_WIDTH => self.settings.width = val.parse::<u8>().unwrap(),
-            INPUT_GRAPH_CHAR => {
-                let index = val.parse::<u8>().unwrap(); // slider value
-                self.settings.graph_char = ColorSquare::by_index(index)
-            }
-            INPUT_ABOVE_CHAR => {
-                let index = val.parse::<u8>().unwrap(); // slider value
-                self.settings.above_char = ColorSquare::by_index(index)
-            }
-            INPUT_BELOW_CHAR => {
-                let index = val.parse::<u8>().unwrap(); // slider value
-                self.settings.below_char = ColorSquare::by_index(index)
-            }
+            INPUT_GRAPH_CHAR => self.settings.graph_char_id = val.parse::<u8>().unwrap(),
+            INPUT_ABOVE_CHAR => self.settings.above_char_id = val.parse::<u8>().unwrap(),
+            INPUT_BELOW_CHAR => self.settings.below_char_id = val.parse::<u8>().unwrap(),
             _ => {}
         }
     }
