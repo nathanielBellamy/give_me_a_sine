@@ -103,15 +103,51 @@ impl Buffer {
 
     pub fn update(&mut self, input_id: String, val: String) {
         match input_id.as_str() {
-            INPUT_A => self.function[0] = val.parse::<f32>().unwrap(),
-            INPUT_B => self.function[1] = val.parse::<f32>().unwrap(),
-            INPUT_C => self.function[2] = val.parse::<f32>().unwrap(),
-            INPUT_EP => self.settings.ep = val.parse::<f32>().unwrap(),
-            INPUT_HEIGHT => self.settings.height = val.parse::<u8>().unwrap(),
-            INPUT_WIDTH => self.settings.width = val.parse::<u8>().unwrap(),
-            INPUT_GRAPH_CHAR => self.settings.graph_char_id = val.parse::<u8>().unwrap(),
-            INPUT_ABOVE_CHAR => self.settings.above_char_id = val.parse::<u8>().unwrap(),
-            INPUT_BELOW_CHAR => self.settings.below_char_id = val.parse::<u8>().unwrap(),
+            INPUT_A => {
+                if let Ok(val)= val.parse::<f32>() {
+                    self.function[0] = val
+                }
+            },
+            INPUT_B => {
+                if let Ok(val) = val.parse::<f32>() {
+                    self.function[1] = val
+                }
+            },
+            INPUT_C => {
+                if let Ok(val) = val.parse::<f32>() {
+                    self.function[2] = val
+                }
+            },
+            INPUT_EP => {
+                if let Ok(val) = val.parse::<f32>() {
+                    self.settings.ep = val
+                }
+            }
+            INPUT_HEIGHT => {
+                if let Ok(val) = val.parse::<u8>() {
+                    self.settings.height = val
+                }
+            },
+            INPUT_WIDTH => {
+                if let Ok(val) = val.parse::<u8>() {
+                    self.settings.width = val
+                }
+            },
+            INPUT_GRAPH_CHAR => {
+                if let Ok(val) = val.parse::<u8>() {
+                    self.settings.graph_char_id = val
+                }
+            },
+            INPUT_ABOVE_CHAR => {
+                if let Ok(val) = val.parse::<u8>() {
+                    self.settings.above_char_id = val
+                }
+            },
+            INPUT_BELOW_CHAR => {
+                if let Ok(val) = val.parse::<u8>() {
+                    self.settings.below_char_id = val
+                }
+            },
             _ => {}
         }
     }
